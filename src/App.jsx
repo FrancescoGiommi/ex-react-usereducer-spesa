@@ -39,6 +39,17 @@ Obiettivo: Vedere un elenco leggibile di tutti i prodotti con nome e prezzo. */
 
 Obiettivo: L’utente può aggiungere prodotti al carrello e vedere una lista dei prodotti aggiunti. */
 
+//! Milestone 3: Modificare il carrello
+
+/* Al click successivo del bottone "Aggiungi al carrello", se il prodotto è già presente:
+        Usa una funzione updateProductQuantity per incrementare la proprietà quantity del prodotto esistente.
+    Per ogni prodotto nel carrello, aggiungi un bottone "Rimuovi dal carrello":
+        Al click, usa una funzione removeFromCart per rimuovere il prodotto dal carrello.
+    Sotto alla lista del carrello, mostra il totale da pagare:
+        Calcola il totale moltiplicando il prezzo per la quantità di ogni prodotto e somma tutti i risultati.
+
+Obiettivo: Gestire l’aggiunta, la rimozione e il calcolo del totale del carrello in modo dinamico. */
+
 function App() {
   const products = [
     { name: "Mela", price: 0.5 },
@@ -50,10 +61,13 @@ function App() {
     { name: "Pasta", price: 0.7 },
   ];
   const [addedProducts, setAddedProducts] = useState([]);
+
+  /* Funzione per aggiungere un prodotto al carrello */
   function addToCart(product) {
-    const productCard = addedProducts.some((p) => p.name === product.name);
+    const productCard = addedProducts.find((p) => p.name === product.name);
     if (productCard) {
-      return;
+      updateProductQuantity(product);
+      return productCard;
     } else {
       setAddedProducts([
         ...addedProducts,
@@ -62,6 +76,31 @@ function App() {
     }
     return productCard;
   }
+
+  /* Funzione per rimuovere un prodotto dal carrello */
+  function removeFromCart(product) {
+    const productCard = addedProducts.find((p) => p.name === product.name);
+    if (productCard.quantity >= 1) {
+      productCard.quantity -= 1;
+      setAddedProducts([...addedProducts]);
+    }
+  }
+
+  /* Funzione per aggiungere più prodotti dello stesso tipo al carrello */
+  function updateProductQuantity(product) {
+    const productCard = addedProducts.find((p) => p.name === product.name);
+    productCard.quantity += 1;
+    setAddedProducts([...addedProducts]);
+  }
+
+  /* Funzione per calcolare il totale */
+  function getTotal() {
+    return addedProducts.reduce(
+      (acc, product) => acc + product.price * product.quantity,
+      0
+    );
+  }
+
   return (
     <>
       <h1>Lista dei prodotti</h1>
@@ -74,6 +113,9 @@ function App() {
             </p>
             <button onClick={() => addToCart(product)}>
               Aggiungi al carrello
+            </button>
+            <button onClick={() => removeFromCart(product)}>
+              Rimuovi dal carrello
             </button>
           </li>
         ))}
@@ -89,6 +131,9 @@ function App() {
           </li>
         ))}
       </ul>
+      <div>
+        <h3>Totale da pagare: {getTotal().toFixed(2)}€</h3>
+      </div>
     </>
   );
 }
