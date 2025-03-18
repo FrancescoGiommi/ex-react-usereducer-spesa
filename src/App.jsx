@@ -79,18 +79,23 @@ function App() {
 
   /* Funzione per rimuovere un prodotto dal carrello */
   function removeFromCart(product) {
-    const productCard = addedProducts.find((p) => p.name === product.name);
-    if (productCard.quantity >= 1) {
-      productCard.quantity -= 1;
-      setAddedProducts([...addedProducts]);
-    }
+    setAddedProducts(
+      (prevProducts) =>
+        prevProducts
+          .map((p) =>
+            p.name === product.name ? { ...p, quantity: p.quantity - 1 } : p
+          )
+          .filter((p) => p.quantity > 0) // Rimuove i prodotti con quantità 0
+    );
   }
 
   /* Funzione per aggiungere più prodotti dello stesso tipo al carrello */
   function updateProductQuantity(product) {
-    const productCard = addedProducts.find((p) => p.name === product.name);
-    productCard.quantity += 1;
-    setAddedProducts([...addedProducts]);
+    setAddedProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p.name === product.name ? { ...p, quantity: p.quantity + 1 } : p
+      )
+    );
   }
 
   /* Funzione per calcolare il totale */
